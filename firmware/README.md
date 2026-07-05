@@ -4,9 +4,9 @@ STM32CubeIDE project for the STM32G031K8, built and run on a NUCLEO-G031K8 dev b
 
 ## Files
 
-- `STM32G031K8/Core/` — application code 
-- `STM32G031K8/Drivers/` — CMSIS + STM32G0xx HAL
-- `STM32G031K8/STM32G031K8.ioc` — CubeMX configuration
+- `STM32G031K8/Core/` : application code 
+- `STM32G031K8/Drivers/` : CMSIS + STM32G0xx HAL
+- `STM32G031K8/STM32G031K8.ioc` : CubeMX configuration
 
 ## Configuration
 
