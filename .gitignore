@@ -16,9 +16,7 @@ Release/
 build/
 cmake-build-*/
 
-*.elf
 *.map
-*.o
 *.su
 *.hex
 *.bin
