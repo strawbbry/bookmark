@@ -21,6 +21,7 @@ cmake-build-*/
 *.hex
 *.elf
 *.bin
+*.o
 
 # Eclipse indexes
 *.pdom
