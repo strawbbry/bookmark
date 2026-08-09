@@ -1,6 +1,18 @@
+int main(void) {
+    return 0;
+}
+
 // reset handler
 __attribute__((naked, noreturn)) void _reset(void) {  
-    for (;;) (void) 0;  // infinite loop
+    // link.ld 
+    extern long _sbss, _ebss, _sdata, _edata, _sidata;
+    // memset .bss to zero
+    for (long *dst = &_sbss; dst < &_ebss; dst++) { *dst = 0; }
+    // copy .data section to RAM
+    for (long *dst = &_sdata, *src = &_sidata; dst < &_edata; dst++) { *dst = *src++; }
+
+    main();
+    for (;;) (void) 0;  // infinite loop (if main() returns)
 }
 
 // initial stack pointer
