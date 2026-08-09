@@ -19,7 +19,6 @@ cmake-build-*/
 *.map
 *.su
 *.hex
-*.bin
 
 # Eclipse indexes
 *.pdom
