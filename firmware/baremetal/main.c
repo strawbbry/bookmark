@@ -1,5 +1,17 @@
+#include <peripherals.c>
+
 int main(void) {
-    return 0;
+    uint16_t led = PIN('C', 6);
+    RCC->IOPENR |= BIT(PINBANK(led));
+    gpio_set_mode(led, GPIO_MODE_OUTPUT);
+    for (;;) {
+        // pc6 led blink
+        gpio_write(led, true);
+        spin(999999);
+        gpio_write(led, false);
+        spin(999999);
+    };
+    return 0; 
 }
 
 // reset handler
