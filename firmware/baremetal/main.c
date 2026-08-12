@@ -1,18 +1,5 @@
 #include <peripherals.c>
-
-int main(void) {
-    uint16_t led = PIN('C', 6);
-    RCC->IOPENR |= BIT(PINBANK(led));
-    gpio_set_mode(led, GPIO_MODE_OUTPUT);
-    for (;;) {
-        // pc6 led blink
-        gpio_write(led, true);
-        spin(999999);
-        gpio_write(led, false);
-        spin(999999);
-    };
-    return 0; 
-}
+#include <stdint.h>
 
 // reset handler
 __attribute__((naked, noreturn)) void _reset(void) {  
@@ -30,7 +17,32 @@ __attribute__((naked, noreturn)) void _reset(void) {
 // initial stack pointer
 extern void _estack(void);  // defined in link.ld
 
+// systick handler 
+static volatile uint32_t systicks;
+void SysTick_Handler(void) {
+    systicks++;
+}
+
 // vector table 'tab' : 16 standard and 32 STM32-specific handlers
 __attribute__((section(".vectors"))) void (*const tab[16 + 32])(void) = {
-    _estack, _reset
+    _estack, _reset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SysTick_Handler
 };
+
+int main(void) {
+    uint16_t led = PIN('C', 6);
+    RCC->IOPENR |= BIT(PINBANK(led));
+    gpio_set_mode(led, GPIO_MODE_OUTPUT);
+
+    uint32_t systicker;
+    uint32_t period = 100; 
+
+    for (;;) {
+        // pc6 led blink
+        if (timer(&systicker, period, systicks)) {
+            static bool on;
+            gpio_write(led, on);
+            on = !on;   // toggle led
+        }
+    };
+    return 0; 
+}

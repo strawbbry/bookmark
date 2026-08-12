@@ -1,7 +1,9 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#define BIT(x) (1UL << (x))
+#define BIT(x) (1UL << (x))  // bitmask
+
+
 //                          upper byte       lower byte
 #define PIN(bank, num) ((((bank) - 'A') << 8) | (num))
 //                      upper byte
@@ -9,8 +11,21 @@
 //                   lower byte 
 #define PINBANK(pin) ((pin) >> 8)
 
+
 static inline void spin(volatile uint32_t count) {
     while (count--) (void) 0;  // nop
+}
+
+bool timer(uint32_t *expiry, uint32_t period, uint32_t now) {
+    // reset error timer  
+    if (now + period < *expiry) { *expiry = 0; }
+    // set new timer 
+    if (*expiry == 0) { *expiry = now + period; }
+    // continue unexpired timer 
+    if (*expiry > now) { return false; }
+    // expired timer                         set new       resync overdue
+    *expiry = ((now - *expiry) > period) ? now + period : *expiry + period;   
+    return true;
 }
 
 
@@ -21,6 +36,23 @@ struct rcc {
 };
 
 #define RCC ((struct rcc *) 0x40021000)
+
+
+struct systick {
+    volatile uint32_t CSR, RVR, CVR, CALIB;
+};
+
+#define SYSTICK ((struct systick *) 0x0000003C)
+
+static inline void systick_init(uint32_t ticks) {
+    if ((ticks - 1) > 0xffffff) { return; }  // 24-bit systick
+    
+    SYSTICK->RVR = ticks - 1;
+    SYSTICK->CVR = 0;
+    //             enable  tickint  clksource
+    SYSTICK->CSR = BIT(0) | BIT(1) | BIT(2);
+    RCC->APBRSTR2 |= BIT(0);
+}
 
 
 struct gpio {
