@@ -42,7 +42,7 @@ struct systick {
     volatile uint32_t CSR, RVR, CVR, CALIB;
 };
 
-#define SYSTICK ((struct systick *) 0x0000003C)
+#define SYSTICK ((struct systick *) 0xE000E010)
 
 static inline void systick_init(uint32_t ticks) {
     if ((ticks - 1) > 0xffffff) { return; }  // 24-bit systick

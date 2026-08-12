@@ -12,8 +12,9 @@ int main(void) {
     RCC->IOPENR |= BIT(PINBANK(led));
     gpio_set_mode(led, GPIO_MODE_OUTPUT);
 
+    systick_init(16000000 / 1000);   // tick per 1ms
     uint32_t systicker;
-    uint32_t period = 100; 
+    uint32_t period = 100;   // blink per 100ms
 
     for (;;) {
         // pc6 led blink
