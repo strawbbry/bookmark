@@ -1,5 +1,6 @@
 #include <peripherals.c>
 #include <stdint.h>
+#include <stdlib.h>
 
 // systick handler 
 static volatile uint32_t systicks;
@@ -16,12 +17,15 @@ int main(void) {
     uint32_t systicker;
     uint32_t period = 100;   // blink per 100ms
 
+    uart_init(UART2, 115200);
+
     for (;;) {
         // pc6 led blink
         if (timer(&systicker, period, systicks)) {
             static bool on;
             gpio_write(led, on);
             on = !on;   // toggle led
+            uart_write_buffer(UART2, "blink\r\n", sizeof("blink\r\n"));
         }
     };
     return 0; 
