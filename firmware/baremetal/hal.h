@@ -22,6 +22,13 @@
 #define PINBANK(pin) ((pin) >> 8)
 
 
+enum { APB_PRE = 0 };                                     // AHB clock / 1 
+enum { PLL_HSI = 16, PLL_M = 1, PLL_N = 8, PLL_R = 2 };   // run @ 64Mhz
+#define FLASH_LATENCY 2
+#define SYS_FREQUENCY ((PLL_HSI * PLL_N / PLL_M / PLL_R) * 1000000)
+#define APB_FREQUENCY (SYS_FREQUENCY)
+
+
 static inline void spin(volatile uint32_t count) {
     while (count--) { asm("nop"); }   // call assembly fn
 }
@@ -84,6 +91,8 @@ static inline void uart_init(USART_TypeDef *uart, unsigned long baud) {
     uint16_t tx = 0;
     uint16_t rx = 0;
 
+    uint32_t freq = SYS_FREQUENCY;
+
     if (uart == UART1) {
         RCC->APBENR2 |= BIT(14);
         tx = PIN('A', 9);
@@ -106,7 +115,7 @@ static inline void uart_init(USART_TypeDef *uart, unsigned long baud) {
 
     uart->CR1 = 0;
     //        divisor register 
-    uart->BRR = FREQ / baud;
+    uart->BRR = freq / baud;
     //             ue       re      te
     uart->CR1 |= BIT(0) | BIT(2) | BIT(3); 
 }

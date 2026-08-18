@@ -5,7 +5,7 @@ CFLAGS  ?=  -W -Wall -Wextra -Werror -Wundef -Wshadow -Wdouble-promotion \
 			-I. -Iinclude -Icmsis_core/CMSIS/Core/Include -Icmsis_g0/Include \
             -mcpu=cortex-m0plus -mthumb $(EXTRA_CFLAGS)
 LDFLAGS ?= -Tlink.ld -nostartfiles -nostdlib --specs nano.specs -lc -lgcc -Wl,--gc-sections -Wl,-Map=$@.map
-SOURCES = main.c syscalls.c
+SOURCES = main.c syscalls.c sysinit.c
 SOURCES += cmsis_g0/Source/Templates/gcc/startup_stm32g031xx.s
 
 # 'make build' : create firmware.elf & flashable .bin & start arm-none-eabi-gcc compiler with flags

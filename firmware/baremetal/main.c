@@ -5,14 +5,6 @@ void SysTick_Handler(void) {
     systicks++;
 }
 
-// CMSIS declares SystemCoreClock & SystemInit as extern: define once ! 
-uint32_t SystemCoreClock = FREQ;
-void SystemInit(void) {
-    RCC->APBENR2 |= RCC_APBENR2_SYSCFGEN;
-    SysTick_Config(SystemCoreClock / 1000); 
-}
-
-
 int main(void) {
     uint16_t led = PIN('C', 6);
     gpio_set_mode(led, GPIO_MODE_OUTPUT);
