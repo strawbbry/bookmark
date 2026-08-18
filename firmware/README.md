@@ -4,7 +4,7 @@ Project for the STM32G031K8, built and run on a NUCLEO-G031K8 dev board (LQFP32 
 
 ## Files
 
-- `baremetal` : baremetal C code created by learning with [cpq baremetal programming guide]([url](https://github.com/cpq/bare-metal-programming-guide/tree/main)).
+- `baremetal` : baremetal C code created by learning with [cpq baremetal programming guide](https://github.com/cpq/bare-metal-programming-guide/tree/main).
 - `stm32cube` : HAL-based C code built upon CubeMX-generated configuration in STM32CubeIDE.
 
 ## Guide
