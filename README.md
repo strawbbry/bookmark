@@ -8,7 +8,7 @@ A bookmark-form PCB that tracks study sessions.
 - I2C: DS3231
 - SPI: W25Q32
 - OLED: SSD1306
-- Voltage Divider: FSR402
+- Force Sensor: FSR402
 
 ## Files
 
