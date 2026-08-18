@@ -6,7 +6,7 @@ Altium Designer project for custom bookmark PCB.
 
 Main PCB design.
 
-## NucleoG031K8
+## nucleo
 
 Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
