@@ -44,3 +44,6 @@ int _lseek(int fd, int ptr, int dir) {
     (void) fd, (void) ptr, (void) dir;
     return 0;
 }
+
+void _init(void) {
+}

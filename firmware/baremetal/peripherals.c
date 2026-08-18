@@ -1,15 +1,8 @@
-// only include file once per compilation unit ! 
-#pragma once   // = #ifndef HAL #define HAL ... #endif
-
 #include <inttypes.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-
-// vendor cmsis headers
-#include "stm32g031xx.h"
 
 #define BIT(x) (1UL << (x))  // bitmask
 #define FREQ 16000000        // 16Mhz
@@ -23,7 +16,7 @@
 
 
 static inline void spin(volatile uint32_t count) {
-    while (count--) { asm("nop"); }   // call assembly fn
+    while (count--) (void) 0;  // nop
 }
 
 static inline bool timer(uint32_t *expiry, uint32_t period, uint32_t now) {
@@ -39,12 +32,50 @@ static inline bool timer(uint32_t *expiry, uint32_t period, uint32_t now) {
 }
 
 
-#define GPIO(bank) ((GPIO_TypeDef *) (GPIOA_BASE + 0x400U * (bank)))
+struct rcc {
+    volatile uint32_t CR, ICSCR, CFGR, PLLCFGR, RESERVED, CRRCR, CIER, CIFR, CICR, IOPRSTR, AHBRSTR,
+        APBRSTR1, APBRSTR2, IOPENR, AHBENR, APBENR1, APBENR2, IOPSMENR, AHBSMENR, APBSMENR1, APBSMENR2, 
+        CCIPR, CCIPR2, BDCR, CSR;
+};
 
+#define RCC ((struct rcc *) 0x40021000)
+
+
+struct systick {
+    volatile uint32_t CSR, RVR, CVR, CALIB;
+};
+
+#define SYSTICK ((struct systick *) 0xE000E010)
+
+static inline void systick_init(uint32_t ticks) {
+    if ((ticks - 1) > 0xffffff) { return; }  // 24-bit systick
+    
+    SYSTICK->RVR = ticks - 1;
+    SYSTICK->CVR = 0;
+    //             enable  tickint  clksource
+    SYSTICK->CSR = BIT(0) | BIT(1) | BIT(2);
+    RCC->APBENR2 |= BIT(0);
+}
+
+
+struct gpio {
+    volatile uint32_t MODER, OTYPER, OSPEEDR, PUPDR, IDR, ODR, BSRR, LCKR, AFRL, AFRH, BRR;
+};
+
+#define GPIOA ((struct gpio *) 0x50000000)
+#define GPIOB ((struct gpio *) 0x50000400)
+#define GPIOC ((struct gpio *) 0x50000800)
+#define GPIOD ((struct gpio *) 0x50000C00)
+#define GPIOE ((struct gpio *) 0x50001000)
+#define GPIOF ((struct gpio *) 0x50001400)
+
+#define GPIO(bank) ((struct gpio *) (0x50000000 + 0x400 * bank))
+
+// num       0                1                        2                     3
 enum {GPIO_MODE_INPUT, GPIO_MODE_OUTPUT, GPIO_MODE_ALTERNATEFUNCTION, GPIO_MODE_ANALOG};
 
 static inline void gpio_set_mode(uint16_t pin, uint8_t mode) {
-    GPIO_TypeDef *bank = GPIO(PINBANK(pin));
+    struct gpio *bank = GPIO(PINBANK(pin));
     uint8_t number = PINNUMBER(pin);
 
     RCC->IOPENR |= BIT(PINBANK(pin));
@@ -54,32 +85,35 @@ static inline void gpio_set_mode(uint16_t pin, uint8_t mode) {
 }
 
 static inline void gpio_write(uint16_t pin, bool val) {
-     GPIO_TypeDef *bank = GPIO(PINBANK(pin));
+    struct gpio *bank = GPIO(PINBANK(pin));
     //                 pin mask      shift to    set reset
     bank->BSRR = (1U << PINNUMBER(pin)) << (val ? 0 : 16);
 }
 
-// GPIO_TypeDef stores AF[2] instead of AFRL, AFRH
 static inline void gpio_set_af(uint16_t pin, uint8_t af) {
-     GPIO_TypeDef *bank = GPIO(PINBANK(pin));
+    struct gpio *bank = GPIO(PINBANK(pin));
     int number = PINNUMBER(pin);
 
     //   number / 8
     if ((number >> 3) == 1) {
         //                       & 0111 = 0 - 7 pos
-        bank->AFR[1] &= ~(15UL << ((number & 7) * 4));           // clear pin
-        bank->AFR[1] |= ((uint32_t) af) << ((number & 7) * 4);   // set af
+        bank->AFRH &= ~(15UL << ((number & 7) * 4));           // clear pin
+        bank->AFRH |= ((uint32_t) af) << ((number & 7) * 4);   // set af
     } else {
-        bank->AFR[0] &= ~(15UL << ((number & 7) * 4));
-        bank->AFR[0] |= ((uint32_t) af) << ((number & 7) * 4);
+        bank->AFRL &= ~(15UL << ((number & 7) * 4));
+        bank->AFRL |= ((uint32_t) af) << ((number & 7) * 4);
     }
 }
 
 
-#define UART1 USART1
-#define UART2 USART2
+struct uart {
+    volatile uint32_t CR1, CR2, CR3, BRR, GTPR, RTOR, RQR, ISR, ICR, RDR, TDR, PRESC;
+};
 
-static inline void uart_init(USART_TypeDef *uart, unsigned long baud) {
+#define UART1 ((struct uart *) 0x40013800)   // pa9/pa10
+#define UART2 ((struct uart *) 0x40004400)   // pa2/pa3
+
+static inline void uart_init(struct uart *uart, unsigned long baud) {
     uint8_t af = 1;
     uint16_t tx = 0;
     uint16_t rx = 0;
@@ -111,19 +145,19 @@ static inline void uart_init(USART_TypeDef *uart, unsigned long baud) {
     uart->CR1 |= BIT(0) | BIT(2) | BIT(3); 
 }
 
-static inline int uart_read_ready(USART_TypeDef *uart) {
+static inline int uart_read_ready(struct uart *uart) {
     return uart->ISR & BIT(5);
 }
 
-static inline uint8_t uart_read_byte(USART_TypeDef *uart) {
+static inline uint8_t uart_read_byte(struct uart *uart) {
     return (uint8_t) (uart->RDR & 255);   // only keep RDR[8:0]
 }
 
-static inline void uart_write_byte(USART_TypeDef *uart, uint8_t byte) {
+static inline void uart_write_byte(struct uart *uart, uint8_t byte) {
     uart->TDR = byte;
     while ((uart->ISR & BIT(7)) == 0) { spin(1); }
 }
 
-static inline void uart_write_buffer(USART_TypeDef *uart, char *buf, size_t len) {
+static inline void uart_write_buffer(struct uart *uart, char *buf, size_t len) {
     while (len-- > 0) { uart_write_byte(uart, *(uint8_t *) buf++); }
 }

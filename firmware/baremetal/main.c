@@ -1,15 +1,23 @@
-#include <hal.h>
+#include "hal.h"
 
 static volatile uint32_t systicks;
 void SysTick_Handler(void) {
     systicks++;
 }
 
+// CMSIS declares SystemCoreClock & SystemInit as extern: define once ! 
+uint32_t SystemCoreClock = FREQ;
+void SystemInit(void) {
+    RCC->APBENR2 |= RCC_APBENR2_SYSCFGEN;
+    SysTick_Config(SystemCoreClock / 1000); 
+}
+
+
 int main(void) {
     uint16_t led = PIN('C', 6);
     gpio_set_mode(led, GPIO_MODE_OUTPUT);
 
-    systick_init(16000000 / 1000);   // tick per 1ms
+    // systick_init(16000000 / 1000);   // tick per 1ms
     uint32_t systicker = 0;
     uint32_t period = 100;   // blink per 100ms
 

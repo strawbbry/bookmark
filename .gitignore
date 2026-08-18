@@ -15,6 +15,8 @@ Debug/
 Release/
 build/
 cmake-build-*/
+cmsis_core/
+cmsis_g0/
 
 *.map
 *.su
