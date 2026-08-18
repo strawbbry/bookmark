@@ -7,6 +7,18 @@ Project for the STM32G031K8, built and run on a NUCLEO-G031K8 dev board (LQFP32 
 - `baremetal` : baremetal C code created by learning with [cpq baremetal programming guide]([url](https://github.com/cpq/bare-metal-programming-guide/tree/main)).
 - `stm32cube` : HAL-based C code built upon CubeMX-generated configuration in STM32CubeIDE.
 
+## Guide
+
+```bash
+cd ~/firmware/baremetal
+make clean && make build
+make flash
+
+ls /dev/cu.*   # to discover nucleo devboard
+cu -l /dev/cu.<devboard> -s 115200
+# ~. to exit
+```
+
 ## Configuration
 
 Peripherals configured via CubeMX (continued via baremetal):
