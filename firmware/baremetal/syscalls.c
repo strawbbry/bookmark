@@ -1,25 +1,28 @@
 #include "hal.h"
 
 int _write(int fd, char *ptr, int len) {
-    (void) fd, (void) ptr, (void) len;
-    // if writing to output file descriptor 1 (std): write buffer to UART2 !
+    // unix fd 0:stdin, 1:stdout, 2:stderr
+    (void) fd, (void) ptr, (void) len;   
+    // if writing to stdout : write buffer of UART2 !
     if (fd == 1) uart_write_buffer(UART2, ptr, (size_t) len);    
     return -1;
+}
+
+void *_sbrk(int incr) {
+    // start of free RAM
+    extern char _end;   
+    static unsigned char *heap = NULL;
+    unsigned char *prev_heap;
+    if (heap == NULL) heap = (unsigned char *) &_end;
+    prev_heap = heap;
+    // walk forward thru RAM
+    heap += incr;
+    return prev_heap;
 }
 
 int _fstat(int fd, struct stat *st) {
     (void) fd, (void) st;
     return -1;
-}
-
-void *_sbrk(int incr) {
-    extern char _end;
-    static unsigned char *heap = NULL;
-    unsigned char *prev_heap;
-    if (heap == NULL) heap = (unsigned char *) &_end;
-    prev_heap = heap;
-    heap += incr;
-    return prev_heap;
 }
 
 int _close(int fd) {
