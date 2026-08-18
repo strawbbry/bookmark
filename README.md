@@ -5,6 +5,10 @@ A bookmark-form PCB that tracks study sessions.
 ## Hardware
 
 - MCU: STM32G031K8 (Arm Cortex-M0+)
+- I2C: DS3231
+- SPI: W25Q32
+- OLED: SSD1306
+- Voltage Divider: FSR402
 
 ## Files
 
