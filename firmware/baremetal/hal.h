@@ -1,6 +1,11 @@
+// only include file once per compilation unit ! 
+#pragma once   // = #ifndef HAL #define HAL ... #endif
+
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #define BIT(x) (1UL << (x))  // bitmask
 #define FREQ 16000000        // 16Mhz
@@ -17,7 +22,7 @@ static inline void spin(volatile uint32_t count) {
     while (count--) (void) 0;  // nop
 }
 
-bool timer(uint32_t *expiry, uint32_t period, uint32_t now) {
+static inline bool timer(uint32_t *expiry, uint32_t period, uint32_t now) {
     // reset error timer  
     if (now + period < *expiry) { *expiry = 0; }
     // set new timer 
@@ -75,6 +80,8 @@ enum {GPIO_MODE_INPUT, GPIO_MODE_OUTPUT, GPIO_MODE_ALTERNATEFUNCTION, GPIO_MODE_
 static inline void gpio_set_mode(uint16_t pin, uint8_t mode) {
     struct gpio *bank = GPIO(PINBANK(pin));
     uint8_t number = PINNUMBER(pin);
+
+    RCC->IOPENR |= BIT(PINBANK(pin));
 
     bank->MODER &= ~(3U << (number * 2));
     bank->MODER |= (mode & 3) << (number * 2);
