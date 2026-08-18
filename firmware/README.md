@@ -1,20 +1,24 @@
 # firmware
 
-STM32CubeIDE project for the STM32G031K8, built and run on a NUCLEO-G031K8 dev board (LQFP32 package).
+Project for the STM32G031K8, built and run on a NUCLEO-G031K8 dev board (LQFP32 package).
 
 ## Files
 
-- `STM32G031K8/Core/` : application code 
-- `STM32G031K8/Drivers/` : CMSIS + STM32G0xx HAL
-- `STM32G031K8/STM32G031K8.ioc` : CubeMX configuration
+- `baremetal` : baremetal C code created by learning with [cpq baremetal programming guide]([url](https://github.com/cpq/bare-metal-programming-guide/tree/main)).
+- `stm32cube` : HAL-based C code built upon CubeMX-generated configuration in STM32CubeIDE.
 
 ## Configuration
 
-Peripherals configured via CubeMX:
+Peripherals configured via CubeMX (continued via baremetal):
 - GPIO (LD3): on-board LED (PC6)
 - USART2: UART 8N1 115200 (PA2/PA3)
-- NRST (T_NRST): hardware reset (ST-LINK)
 
 ## Status
-- HAL-based LED test completed.
-- HAL-based UART string TX/RX test completed.
+- `baremetal` maximum frequency clock setup completed.
+- `baremetal` CMSIS header migration completed.
+- `baremetal` printf() I/O retargeted to UART completed.
+- `baremetal` UART string RX test completed.
+- `baremetal` SysTick LED test completed.
+- `baremetal` LED test completed.
+- `stm32cube` LED test completed.
+- `stm32cube` UART string TX/RX test completed.
