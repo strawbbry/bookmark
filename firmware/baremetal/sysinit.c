@@ -1,6 +1,6 @@
 #include "hal.h"
 
-// CMSIS declares SystemCoreClock & SystemInit as extern: define once ! 
+// cmsis declares SystemCoreClock & SystemInit as extern: define once ! 
 
 uint32_t SystemCoreClock = SYS_FREQUENCY;
 
