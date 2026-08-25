@@ -17,4 +17,5 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
 ## Status
 
+- Created base PCB project.
 - Clean ERC check for NucleoG031K8 recreation.
