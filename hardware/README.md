@@ -2,7 +2,7 @@
 
 Altium Designer project for custom bookmark PCB. 
 
-## studytracker
+## Base
 
 Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
