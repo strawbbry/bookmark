@@ -2,11 +2,7 @@
 
 Altium Designer project for custom bookmark PCB. 
 
-## YPT
-
-Main PCB design.
-
-## nucleo
+## studytracker
 
 Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
@@ -17,5 +13,4 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
 ## Status
 
-- Base project created for YPT.
-- Clean ERC check for NucleoG031K8 recreation.
+- Clean ERC check for base NucleoG031K8 recreation.
