@@ -1,8 +1,12 @@
 # hardware
 
-Altium Designer project for custom bookmark PCB. 
+Altium Designer project for custom bookmark PCB.
 
-## Base
+## pcb
+
+Main PCB design.
+
+## nucleo
 
 Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
@@ -13,4 +17,4 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
 ## Status
 
-- Clean ERC check for base NucleoG031K8 recreation.
+- Clean ERC check for NucleoG031K8 recreation.
