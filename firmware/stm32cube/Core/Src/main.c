@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,16 +98,28 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  char msg[] = "hi!\r\n";
-  uint8_t rx;
-  uint8_t buffer[32];
-  uint8_t index = 0;
+  printf("searching for I2C device\r\n");
+
+  // I2C has 127 total addr (7 bits)
+  for (uint8_t addr = 1; addr < 128; addr++) {
+	  // stm32g0 hal docs page 351
+	  if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
+		  // %02X : at least 2 digits (32 bits) else prepend 0s
+		  printf("found I2C device @ 0x%02x\r\n", addr);
+	  }
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint8_t buf[3];
+	  HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x00, I2C_MEMADD_SIZE_8BIT, buf, 3, HAL_MAX_DELAY);
+	  printf("%02x %02x %02x\r\n", buf[0], buf[1], buf[2]);
+	  HAL_Delay(1000);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -335,6 +347,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+int __io_putchar(int ch) {
+	HAL_UART_Transmit(&huart2, (uint8_t *) &ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
 
 /* USER CODE END 4 */
 
