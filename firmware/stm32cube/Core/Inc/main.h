@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define SPI1_CS_Pin GPIO_PIN_9
+#define SPI1_CS_GPIO_Port GPIOB
 #define T_NRST_Pin GPIO_PIN_2
 #define T_NRST_GPIO_Port GPIOF
 #define T_VCP_TX_Pin GPIO_PIN_2
@@ -69,8 +71,6 @@ void Error_Handler(void);
 #define T_JTMS_GPIO_Port GPIOA
 #define T_JTCK_Pin GPIO_PIN_14
 #define T_JTCK_GPIO_Port GPIOA
-#define SPI1_CS_Pin GPIO_PIN_6
-#define SPI1_CS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

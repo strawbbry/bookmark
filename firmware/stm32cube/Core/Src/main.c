@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,6 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define SSD1306_ADDR (0x3C << 1)
 
 /* USER CODE END PD */
 
@@ -48,6 +51,9 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+// screen: 128 * 64 pixels / 8 pixels (bits) per byte = 1024 bytes
+uint8_t framebuffer[128 * 64 / 8];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -62,6 +68,29 @@ static void MX_SPI1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void ssd1306_draw_pixel(uint8_t x, uint8_t y, uint8_t colour) {
+	// which byte is pixel in?
+	uint16_t byte = x + (y / 8) * 128;
+	// which of the 8 bits in that byte is the pixel?
+	uint8_t bit = y % 8;
+	if (colour) {
+		// white
+		framebuffer[byte] |= (1 << bit);
+	} else {
+		// black
+		framebuffer[byte] &= ~(1 << bit);
+	}
+}
+
+void ssd1306_flush(void) {
+	// 1 control + 1024 framebuffer
+    uint8_t data[1025];
+    // 0x40: 'what follows is pixel data'
+    data[0] = 0x40;
+    memcpy(&data[1], framebuffer, 1024);
+    HAL_I2C_Master_Transmit(&hi2c1, SSD1306_ADDR, data, 1025, 100);
+}
 
 /* USER CODE END 0 */
 
@@ -98,27 +127,49 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+
+uint8_t ssd1306_init_cmds[] = {
+      0xAE, 0xD5, 0x80, 0xA8, 0x3F, 0xD3, 0x00, 0x40,
+      0x8D, 0x14, 0x20, 0x00, 0xA1, 0xC8, 0xDA, 0x12,
+      0x81, 0x7F, 0xD9, 0xF1, 0xDB, 0x40, 0xA4, 0xA6, 0xAF
+  };
+  for (int i = 0; i < sizeof(ssd1306_init_cmds); i++) {
+      uint8_t cmd[2] = {0x00, ssd1306_init_cmds[i]};
+      HAL_I2C_Master_Transmit(&hi2c1, SSD1306_ADDR, cmd, 2, 100);
+  }
+  // 0x21: set column address, 0x22: set page address
+  uint8_t ssd1306_screen_cmds[] = {0x21, 0, 127, 0x22, 0, 7};
+  for (int i = 0; i < 6; i++) {
+	  // 0x00: 'what follows is command'
+      uint8_t cmd[2] = {0x00, ssd1306_screen_cmds[i]};
+      HAL_I2C_Master_Transmit(&hi2c1, SSD1306_ADDR, cmd, 2, 100);
+  }
+
   printf("searching for I2C device\r\n");
 
   // I2C has 127 total addr (7 bits)
   for (uint8_t addr = 1; addr < 128; addr++) {
 	  // stm32g0 hal docs page 351
-	  if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
-		  // %02X : at least 2 digits (32 bits) else prepend 0s
-		  printf("found I2C device @ 0x%02x\r\n", addr);
-	  }
+  if (HAL_I2C_IsDeviceReady(&hi2c1, addr << 1, 1, 10) == HAL_OK) {
+		  // %02x : at least 2 digits (32 bits) else prepend 0s
+    printf("found I2C device @ 0x%02x\r\n", addr);
   }
+  }
+
+  for (int i = 0; i < 64; i++) {
+	ssd1306_draw_pixel(i, i, 1);
+  }
+  ssd1306_flush();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  uint8_t buf[3];
-	  HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x00, I2C_MEMADD_SIZE_8BIT, buf, 3, HAL_MAX_DELAY);
-	  printf("%02x %02x %02x\r\n", buf[0], buf[1], buf[2]);
-	  HAL_Delay(1000);
+  while (1) {
+	uint8_t buf[3];
+	HAL_I2C_Mem_Read(&hi2c1, 0x68 << 1, 0x00, I2C_MEMADD_SIZE_8BIT, buf, 3, HAL_MAX_DELAY);
+	printf("%02x %02x %02x\r\n", buf[2], buf[1], buf[0]);
+	HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
@@ -250,7 +301,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi1.Init.CRCPolynomial = 7;
   hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
   {
     Error_Handler();
@@ -310,16 +361,23 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, GPIO_PIN_RESET);
+  /*Configure GPIO pin : SPI1_CS_Pin */
+  GPIO_InitStruct.Pin = SPI1_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : T_NRST_Pin */
   GPIO_InitStruct.Pin = T_NRST_Pin;
@@ -333,13 +391,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SPI1_CS_Pin */
-  GPIO_InitStruct.Pin = SPI1_CS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SPI1_CS_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
