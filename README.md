@@ -14,3 +14,4 @@ A bookmark-form PCB that tracks study sessions.
 
 - `firmware/` : STM32CubeIDE project targeting the STM32G031K8, with baremetal C base code, developed and tested on a STM32 NUCLEO-G031K8 dev board. See `firmware/README.md`.
 - `hardware/` : Altium Designer project with schematic capture and layout design for custom PCB. See `hardware/README.md`.
+- `pinout.png` : MCU pin configuration in STM32CubeMX. Consistent across `firmware` and `hardware`.
