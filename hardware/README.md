@@ -16,6 +16,7 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 - SWD header (SWDIO, SWCLK, GND, VDD)
 
 ## Status
+- `pcb` : Clean ERC check for LiPo power tree schematic.
 - `pcb` : Clean ERC check for MCU core schematic.
 - `pcb` : Created PCB project.
 - `nucleo` : Clean ERC check for NucleoG031K8 recreation schematic.
