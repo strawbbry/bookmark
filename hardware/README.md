@@ -15,6 +15,8 @@ Altium Designer project for custom bookmark PCB.
 - SWD header (SWDIO, SWCLK, GND, VDD)
 
 ## Status
+- `pcb` base layout footprints (ratsnest) created.
+- `pcb` clean ERC check for complete schematic.
 - `pcb` clean ERC check for USB-C charging receptacle schematic.
 - `pcb` clean ERC check for FSR402 Force sensor schematic.
 - `pcb` clean ERC check for SSD1306 OLED module schematic.
