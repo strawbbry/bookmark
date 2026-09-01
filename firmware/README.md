@@ -6,6 +6,7 @@ Firmware for the STM32G031K8, built and run on a NUCLEO-G031K8 dev board (LQFP32
 
 - `baremetal` : baremetal C base code created by learning with [baremetal guide](https://github.com/cpq/bare-metal-programming-guide/tree/main).
 - `stm32cube` : HAL-based C code to validate peripherals built upon CubeMX-generated configuration in STM32CubeIDE.
+- `demo.mov` : Peripheral validation via `stm32cube` code demonstration video.
 
 ## Guide
 
