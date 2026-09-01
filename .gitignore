@@ -36,3 +36,6 @@ cmsis_g0/
 .history/
 __Previews/
 History/
+
+# PCB logs
+Project Logs for pcb/
