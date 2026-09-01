@@ -16,6 +16,7 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 - SWD header (SWDIO, SWCLK, GND, VDD)
 
 ## Status
+- `pcb` clean ERC check for DS3231 RTC module schematic.
 - `pcb` clean ERC check for LiPo power tree schematic.
 - `pcb` clean ERC check for MCU core schematic.
 - `pcb` base project created.
