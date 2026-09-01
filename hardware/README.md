@@ -2,13 +2,12 @@
 
 Altium Designer project for custom bookmark PCB.
 
-## pcb
+## Files
 
-Main PCB design.
+- `pcb` : main PCB design.
+- `nucleo` : recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
-## nucleo
-
-Recreation of subset of NucleoG031K8 reference schematic (MB1455).
+## `nucleo`
 
 - STM32G031K8T6 (32 pins)
 - VDD/VSS decoupling capacitors (100nF, 4.7uF)
