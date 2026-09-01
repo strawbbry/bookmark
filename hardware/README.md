@@ -16,6 +16,7 @@ Recreation of subset of NucleoG031K8 reference schematic (MB1455).
 - SWD header (SWDIO, SWCLK, GND, VDD)
 
 ## Status
+- `pcb` clean ERC check for FSR402 Force sensor schematic.
 - `pcb` clean ERC check for SSD1306 OLED module schematic.
 - `pcb` clean ERC check for W25Q32 Flash module schematic.
 - `pcb` clean ERC check for DS3231 RTC module schematic.
