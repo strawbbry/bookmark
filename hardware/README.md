@@ -17,7 +17,7 @@ Altium Designer project for custom bookmark PCB.
 - SSD1306 OLED via I2C
 - FSR402 Force Sensor
 
-Battery & USB-C circuit created by following this (guide)[https://www.ampheo.com/blog/how-to-build-a-battery-charging-circuit-with-charger-ics]
+Battery & USB-C circuit created by following this [guide](https://www.ampheo.com/blog/how-to-build-a-battery-charging-circuit-with-charger-ics)
 
 ## `nucleo`
 
