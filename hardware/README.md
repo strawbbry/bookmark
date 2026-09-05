@@ -7,6 +7,18 @@ Altium Designer project for custom bookmark PCB.
 - `pcb` : main PCB design.
 - `nucleo` : recreation of subset of NucleoG031K8 reference schematic (MB1455).
 
+## pcb 
+- STM32G031K8T6 MCU
+- MCP73831 Linear Charge Controller
+- AMS1117 Low Dropout Regulator
+- CX90M USB-C Charger
+- DS3231 RTC via I2C
+- W25Q32 Flash via SPI
+- SSD1306 OLED via I2C
+- FSR402 Force Sensor
+
+Battery & USB-C circuit created by following this (guide)[https://www.ampheo.com/blog/how-to-build-a-battery-charging-circuit-with-charger-ics]
+
 ## `nucleo`
 
 - STM32G031K8T6 (32 pins)
