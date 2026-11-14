@@ -27,6 +27,7 @@ Battery & USB-C circuit created by following this [guide](https://www.ampheo.com
 - SWD header (SWDIO, SWCLK, GND, VDD)
 
 ## Status
+- `pcb` clean DRC check for complete layout.
 - `pcb` base layout footprints (ratsnest) created.
 - `pcb` clean ERC check for complete schematic.
 - `pcb` clean ERC check for USB-C charging receptacle schematic.
